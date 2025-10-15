@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"/><title>Issue Dashboard</title>
+<style>body{font-family:Arial;margin:24px}table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:8px;text-align:left}th{background:#f4f4f4}.high{color:red;font-weight:600}</style>
+</head>
+<body>
+  <h2>Issues Dashboard</h2>
+  <button onclick="fetchTickets()">Refresh</button>
+  <table id="tbl">
+    <thead><tr><th>ID</th><th>Source</th><th>Severity</th><th>Description</th><th>Status</th><th>Assigned To</th></tr></thead>
+    <tbody></tbody>
+  </table>
+<script>
+async function fetchTickets(){
+  const res = await fetch('/api/tickets');
+  const tickets = await res.json();
+  const tbody = document.querySelector('#tbl tbody');
+  tbody.innerHTML = '';
+  tickets.forEach(t => {
+    const tr = document.createElement('tr');
+    const name = t.assignedWorker ? t.assignedWorker.name : '-';
+    tr.innerHTML = `<td>${t.id}</td><td>${t.source||''}</td><td class="${t.severity==='CRITICAL'?'high':''}">${t.severity||''}</td><td>${t.description||''}</td><td>${t.status||''}</td><td>${name}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+fetchTickets();
+</script>
+</body>
+</html>
